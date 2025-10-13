@@ -1,0 +1,55 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: black;
+}
+
+/* Biodata box */
+.biodata {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #ffff66; /* Yellowish for visibility */
+  font-family: Arial, sans-serif;
+  background-color: rgba(0,0,0,0.6);
+  padding: 15px 25px;
+  border-radius: 12px;
+  max-width: 520px;
+  z-index: 10;
+}
+
+.biodata h1 {
+  margin: 0;
+  font-size: 24px;
+}
+.biodata h2 {
+  margin: 5px 0;
+  font-size: 18px;
+}
+.biodata p {
+  margin: 3px 0;
+  font-size: 16px;
+}
+
+
+body, html, #root {
+  margin: 0;
+  height: 100%;
+  background-color: black;
+  overflow: hidden;
+}
+
+.biodata {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #f0f0f0; /* readable on black */
+  font-family: 'Arial', sans-serif;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 250px;
+}
