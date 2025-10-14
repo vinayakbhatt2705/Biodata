@@ -149,7 +149,7 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
                 whiteSpace: "nowrap",
               }}
             >
-              📍 Hiranandani Estate, Thane
+              📍 Home: Hiranandani Estate, Thane
             </div>
           </Html>
         </group>
@@ -171,7 +171,7 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
                 whiteSpace: "nowrap",
               }}
             >
-              📍 New Law College, Matunga
+              📍 College: New Law College, Matunga
             </div>
           </Html>
         </group>
