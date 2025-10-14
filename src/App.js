@@ -52,7 +52,7 @@ function latLonToXYZ(lat, lon, radius) {
 }
 
 // -------------------- Planet --------------------
-function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRotate = 0.01 }) {
+function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRotate = 0.01, name, onClick }) {
   const meshRef = useRef();
   const map = useLoader(THREE.TextureLoader, texturePath);
 
@@ -66,7 +66,7 @@ function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRo
   });
 
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} onClick={() => onClick(name)}>
       <sphereGeometry args={[size, 64, 64]} />
       <meshStandardMaterial map={map} />
     </mesh>
@@ -83,29 +83,23 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
   const earthMap = useLoader(THREE.TextureLoader, "/textures/earth_day.jpg");
   const moonMap = useLoader(THREE.TextureLoader, "/textures/moon.jpg");
 
-  // Locations
-  const thaneXYZ = latLonToXYZ(19.243, 72.972, 1.22); // Hiranandani, Thane
-  const matungaXYZ = latLonToXYZ(19.025, 72.850, 1.22); // New Law College, Matunga
-  const hcMumbaiXYZ = latLonToXYZ(18.954, 72.835, 1.22); // High Court Mumbai
+  const thaneXYZ = latLonToXYZ(19.243, 72.972, 1.22);
+  const matungaXYZ = latLonToXYZ(19.025, 72.850, 1.22);
+  const hcMumbaiXYZ = latLonToXYZ(18.954, 72.835, 1.22);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime() * orbitSpeed;
-
-    // Earth's orbit + rotation
     if (groupRef.current) {
       groupRef.current.position.x = distance * Math.cos(t);
       groupRef.current.position.z = distance * Math.sin(t);
     }
     if (earthRef.current) earthRef.current.rotation.y += 0.01;
-
-    // Moon orbit
     if (moonRef.current) {
       moonRef.current.position.x = 2.8 * Math.cos(t * 2.2);
       moonRef.current.position.z = 2.8 * Math.sin(t * 2.2);
     }
 
-    // Camera zoom stages
-    if (zoomStage === 1 || zoomStage === 2 || zoomStage === 3) {
+    if (zoomStage >= 1 && zoomStage <= 3) {
       const markerName = zoomStage === 1 ? "thaneMarker" : zoomStage === 2 ? "matungaMarker" : "hcMarker";
       const marker = earthRef.current?.getObjectByName(markerName);
       if (marker) {
@@ -116,7 +110,6 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
         camera.lookAt(worldPos);
       }
     } else if (zoomStage === 0 && universeCameraPos) {
-      // Slow universe rotation
       const time = clock.getElapsedTime() * 0.05;
       const radius = 28;
       const x = radius * Math.sin(time);
@@ -132,67 +125,40 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
         <sphereGeometry args={[1.2, 64, 64]} />
         <meshStandardMaterial map={earthMap} />
 
-        {/* Hiranandani Estate, Thane */}
+        {/* Thane */}
         <group name="thaneMarker" position={thaneXYZ}>
           <mesh>
             <sphereGeometry args={[0.06, 16, 16]} />
             <meshStandardMaterial color="red" emissive="red" emissiveIntensity={1.5} />
           </mesh>
           <Html distanceFactor={10}>
-            <div
-              style={{
-                color: "black",
-                background: "rgba(255,255,255,0.8)",
-                padding: "6px 10px",
-                borderRadius: "8px",
-                fontSize: "14px",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <div style={{ color: "black", background: "rgba(255,255,255,0.8)", padding: "6px 10px", borderRadius: "8px", fontSize: "14px" }}>
               📍 Home: Hiranandani Estate, Thane
             </div>
           </Html>
         </group>
 
-        {/* New Law College, Matunga */}
+        {/* Matunga */}
         <group name="matungaMarker" position={matungaXYZ}>
           <mesh>
             <sphereGeometry args={[0.06, 16, 16]} />
             <meshStandardMaterial color="blue" emissive="blue" emissiveIntensity={1.5} />
           </mesh>
           <Html distanceFactor={10}>
-            <div
-              style={{
-                color: "black",
-                background: "rgba(255,255,255,0.8)",
-                padding: "6px 10px",
-                borderRadius: "8px",
-                fontSize: "14px",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <div style={{ color: "black", background: "rgba(255,255,255,0.8)", padding: "6px 10px", borderRadius: "8px", fontSize: "14px" }}>
               📍 College: New Law College, Matunga
             </div>
           </Html>
         </group>
 
-        {/* High Court Mumbai */}
+        {/* High Court */}
         <group name="hcMarker" position={hcMumbaiXYZ}>
           <mesh>
             <sphereGeometry args={[0.06, 16, 16]} />
             <meshStandardMaterial color="green" emissive="green" emissiveIntensity={1.5} />
           </mesh>
           <Html distanceFactor={10}>
-            <div
-              style={{
-                color: "black",
-                background: "rgba(255,255,255,0.8)",
-                padding: "6px 10px",
-                borderRadius: "8px",
-                fontSize: "14px",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <div style={{ color: "black", background: "rgba(255,255,255,0.8)", padding: "6px 10px", borderRadius: "8px", fontSize: "14px" }}>
               🏛 Practice: High Court Mumbai
             </div>
           </Html>
@@ -221,20 +187,34 @@ export default function App() {
     "CGPA: 7.7",
     "University: Mumbai University",
     "Relevant Experience: Divorce Case 13B, Issuing Notices, Drafting",
-    "Other Experience: Software Industry Functional Consultant, Project Manager Post",
+    "Other Experience: Software Industry Functional Consultant, Project Manager Role (Click on planet for Experience!)",
   ];
 
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [zoomStage, setZoomStage] = useState(0);
   const [speechDone, setSpeechDone] = useState(false);
+  const [planetInfo, setPlanetInfo] = useState(null);
+  const [flash, setFlash] = useState(false);
 
   const sunMap = useLoader(THREE.TextureLoader, "/textures/sun.jpg");
   const universeCameraPos = [0, 12, 28];
 
+  const handlePlanetClick = (name) => {
+    const infoMap = {
+      Sun: "Sun Pharma Experience 3 Year Manager (2014-2017)",
+      Jupiter: "Capgemini - Java Team Lead (2013), SAP Operations Lead (2021), Scrum Master (2023)",
+      Mercury: "Base Information Consultant ERP (2007-2009/2010-2012)",
+      Venus: "Dubai Bilkish (2009)",
+      Mars: "Softenger, Project Lead (2018-2019)",
+    };
+    setPlanetInfo(infoMap[name]);
+    setFlash(true);
+    setTimeout(() => setFlash(false), 1000); // 15 sec flash
+  };
+
   useEffect(() => {
     if (currentLineIndex === biodataLines.length && !speechDone) {
       setSpeechDone(true);
-
       let textToSpeak = "Subject: is Lawyer. ";
       biodataLines.forEach((line) => {
         if (line.startsWith("Phone:")) {
@@ -244,28 +224,18 @@ export default function App() {
           textToSpeak += `${line}. `;
         }
       });
-
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
       utterance.rate = 1;
       utterance.pitch = 1.05;
-
       const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find(
-        (v) =>
-          v.name.toLowerCase().includes("female") ||
-          v.name.toLowerCase().includes("zira") ||
-          v.name.toLowerCase().includes("susan")
-      );
+      const femaleVoice = voices.find((v) => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("susan"));
       if (femaleVoice) utterance.voice = femaleVoice;
-
       utterance.onend = () => {
-        // Camera zoom sequence: 15s per location
-        setZoomStage(1); // Thane
-        setTimeout(() => setZoomStage(2), 15000); // Matunga
-        setTimeout(() => setZoomStage(3), 30000); // High Court
-        setTimeout(() => setZoomStage(0), 45000); // Back to Universe
+        setZoomStage(1);
+        setTimeout(() => setZoomStage(2), 15000);
+        setTimeout(() => setZoomStage(3), 30000);
+        setTimeout(() => setZoomStage(0), 45000);
       };
-
       speechSynthesis.speak(utterance);
     }
   }, [currentLineIndex, biodataLines, speechDone]);
@@ -298,20 +268,46 @@ export default function App() {
         <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
 
         {/* Sun */}
-        <mesh position={[0, 0, 0]}>
-          <sphereGeometry args={[3.5, 64, 64]} />
-          <meshBasicMaterial map={sunMap} />
-        </mesh>
+        <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
 
-        {/* Planets */}
-        <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} />
-        <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} />
+        {/* Other planets */}
+        <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
         <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
-        <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} />
-        <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} />
+        <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
 
         <OrbitControls enableZoom={true} enablePan={true} />
       </Canvas>
+
+      {/* Flashing Planet Info */}
+      {planetInfo && flash && (
+        <div style={{
+          position: "absolute",
+          top: "10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          padding: "12px 20px",
+          background: "rgba(255,255,255,0.9)",
+          border: "2px solid #333",
+          borderRadius: "12px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          color: "#000",
+          animation: "flash 1s infinite"
+        }}>
+          {planetInfo}
+        </div>
+      )}
+
+      <style>
+        {`
+          @keyframes flash {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0; }
+          }
+        `}
+      </style>
     </>
   );
 }
