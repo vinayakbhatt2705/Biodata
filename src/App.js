@@ -202,7 +202,7 @@ export default function App() {
     };
     setPlanetInfo(infoMap[name]);
     setFlash(true);
-    setTimeout(() => setFlash(false), 15000); // 15 sec flash
+    setTimeout(() => setFlash(false), 1000); // 15 sec flash
   };
 
   useEffect(() => {
