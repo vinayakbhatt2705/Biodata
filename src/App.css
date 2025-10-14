@@ -7,58 +7,40 @@ html, body, #root {
   background-color: black;
 }
 
-/* Biodata box */
 .biodata {
   position: absolute;
   top: 20px;
   left: 20px;
-  color: #ffff66; /* Yellowish for visibility */
-  font-family: Arial, sans-serif;
-  background-color: rgba(0,0,0,0.6);
-  padding: 15px 25px;
+  color: #00ffcc;
+  font-family: 'Courier New', monospace;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px 18px;
   border-radius: 12px;
-  max-width: 520px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
   z-index: 10;
+  max-width: 360px;
 }
 
-.biodata h1 {
-  margin: 0;
-  font-size: 24px;
-}
-.biodata h2 {
-  margin: 5px 0;
-  font-size: 18px;
-}
-.biodata p {
-  margin: 3px 0;
-  font-size: 16px;
-}
-
-
-body, html, #root {
-  margin: 0;
-  height: 100%;
-  background-color: black;
-  overflow: hidden;
-}
-
-.biodata {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  color: #f0f0f0; /* readable on black */
-  font-family: 'Arial', sans-serif;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 15px;
-  border-radius: 10px;
-  max-width: 300px;
-}
 .profile-pic {
-  width: 60px;           /* Reduced from 90px */
-  height: 75px;          /* Slightly taller to resemble a passport photo */
-  border-radius: 8px;    /* Less circular, more rectangular */
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  border: 2px solid #0ff;
   object-fit: cover;
-  margin-right: 15px;
-  border: 2px solid #fff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 12px rgba(0,255,255,0.12);
+}
+
+.biodata-text p {
+  margin: 6px 0;
+  color: #e6fff7;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.biodata h2 {
+  color: #00ffd6;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
 }
