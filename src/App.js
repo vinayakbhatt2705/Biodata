@@ -132,9 +132,7 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
             <meshStandardMaterial color="red" emissive="red" emissiveIntensity={1.5} />
           </mesh>
           <Html distanceFactor={10}>
-            <div style={{ color: "black", background: "rgba(255,255,255,0.8)", padding: "6px 10px", borderRadius: "8px", fontSize: "14px" }}>
-              📍 Home: Hiranandani Estate, Thane
-            </div>
+            <div className="marker">📍 Home: Hiranandani Estate, Thane</div>
           </Html>
         </group>
 
@@ -145,9 +143,7 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
             <meshStandardMaterial color="blue" emissive="blue" emissiveIntensity={1.5} />
           </mesh>
           <Html distanceFactor={10}>
-            <div style={{ color: "black", background: "rgba(255,255,255,0.8)", padding: "6px 10px", borderRadius: "8px", fontSize: "14px" }}>
-              📍 College: New Law College, Matunga
-            </div>
+            <div className="marker">📍 College: New Law College, Matunga</div>
           </Html>
         </group>
 
@@ -158,9 +154,7 @@ function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCamera
             <meshStandardMaterial color="green" emissive="green" emissiveIntensity={1.5} />
           </mesh>
           <Html distanceFactor={10}>
-            <div style={{ color: "black", background: "rgba(255,255,255,0.8)", padding: "6px 10px", borderRadius: "8px", fontSize: "14px" }}>
-              🏛 Practice: High Court Mumbai
-            </div>
+            <div className="marker">🏛 Practice: High Court Mumbai</div>
           </Html>
         </group>
       </mesh>
@@ -187,7 +181,7 @@ export default function App() {
     "CGPA: 7.7",
     "University: Mumbai University",
     "Relevant Experience: Divorce Case 13B, Issuing Notices, Drafting",
-    "Other Experience: Software Industry Functional Consultant, Project Manager Role (Click on planet for Experience!)",
+    "Other Experience: Software Industry Functional Consultant, Project Manager Post",
   ];
 
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
@@ -203,13 +197,12 @@ export default function App() {
     const infoMap = {
       Sun: "Sun Pharma Experience 3 Year Manager (2014-2017)",
       Jupiter: "Capgemini - Java Team Lead (2013), SAP Operations Lead (2021), Scrum Master (2023)",
-      Mercury: "Base Information Consultant ERP (2007-2009/2010-2012)",
-      Venus: "Dubai Bilkish (2009)",
+      Earth: "Base Information Consultant ERP (2007-2009/2010-2012)",
       Mars: "Softenger, Project Lead (2018-2019)",
     };
     setPlanetInfo(infoMap[name]);
     setFlash(true);
-    setTimeout(() => setFlash(false), 1000); // 15 sec flash
+    setTimeout(() => setFlash(false), 15000); // 15 sec flash
   };
 
   useEffect(() => {
@@ -242,7 +235,8 @@ export default function App() {
 
   return (
     <>
-      <div className="biodata">
+      {/* Biodata Behind Planets */}
+      <div className="biodata" style={{ position: "absolute", top: 0, left: 0, zIndex: 1, pointerEvents: "none", opacity: 0.6 }}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
           <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
         </div>
@@ -262,15 +256,13 @@ export default function App() {
         </div>
       </div>
 
-      <Canvas camera={{ position: universeCameraPos, fov: 50 }}>
+      {/* 3D Scene */}
+      <Canvas style={{ position: "relative", zIndex: 2 }} camera={{ position: universeCameraPos, fov: 50 }}>
         <ambientLight intensity={0.6} />
         <pointLight position={[0, 0, 0]} intensity={1.6} distance={90} />
         <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
 
-        {/* Sun */}
         <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
-
-        {/* Other planets */}
         <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
         <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
         <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
@@ -288,12 +280,13 @@ export default function App() {
           left: "50%",
           transform: "translateX(-50%)",
           padding: "12px 20px",
-          background: "rgba(255,255,255,0.9)",
+          background: "rgba(255,255,255,0.95)",
           border: "2px solid #333",
           borderRadius: "12px",
           fontSize: "18px",
           fontWeight: "bold",
           color: "#000",
+          zIndex: 10,
           animation: "flash 1s infinite"
         }}>
           {planetInfo}
@@ -305,6 +298,14 @@ export default function App() {
           @keyframes flash {
             0%, 50%, 100% { opacity: 1; }
             25%, 75% { opacity: 0; }
+          }
+          .marker { 
+            color: black; 
+            background: rgba(255,255,255,0.8); 
+            padding: 6px 10px; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            white-space: nowrap; 
           }
         `}
       </style>
