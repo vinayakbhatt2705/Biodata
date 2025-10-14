@@ -153,24 +153,34 @@ export default function App() {
     <>
       {/* Biodata overlay */}
       <div className="biodata">
-        <h2>Vinayak Bhatt</h2>
-        <p>Advocate, Bombay High Court</p>
-        <p>Criminal / Civil / Family</p>
-        <p>Phone: 9833730722</p>
-        <p>Email: vinayakbhatt2705@gmail.com</p>
-      </div>
+  <img
+    src="/images/resume-pic.jpg"
+    alt="Vinayak Bhatt"
+    className="profile-pic"
+  />
+  <div className="biodata-text">
+    <h2>Vinayak Bhatt</h2>
+    <p>Advocate, Bombay High Court</p>
+    <p>Criminal / Civil / Family</p>
+    <p>Phone: 9833730722</p>
+    <p>Email:vinayakbhatt2705@gmail.com</p>
+    <p>College: New Law College</p>
+    <p>University: Mumbai University</p>
+  </div>
+</div>
+
 
       <Canvas camera={{ position: [0, 50, 150], fov: 45 }}>
         {/* Lights */}
-        <ambientLight intensity={0.3} />
+        <ambientLight intensity={3.9} />
         <pointLight position={[0, 0, 0]} intensity={3} distance={500} />
 
         {/* Stars */}
         <Stars
-          radius={200}
-          depth={100}
-          count={50000}
-          factor={4}
+          radius={300}
+          depth={150}
+          count={100000}
+          factor={6}
           saturation={15.5}
           fade
           speed={5.5}
@@ -183,11 +193,11 @@ export default function App() {
         </mesh>
 
         {/* Planets */}
-        <Planet texturePath="/textures/mercury.jpg" size={1} distance={15} speed={0.04} />
-        <Planet texturePath="/textures/venus.jpg" size={1.2} distance={22} speed={0.03} />
-        <Earth distance={30} speed={0.02} />
-        <Planet texturePath="/textures/mars.jpg" size={1.5} distance={45} speed={0.02} />
-        <Planet texturePath="/textures/jupiter.jpg" size={4} distance={60} speed={0.01} />
+        <Planet texturePath="/textures/mercury.jpg" size={1.2} distance={15} speed={0.04} />
+        <Planet texturePath="/textures/venus.jpg" size={2.4} distance={22} speed={0.03} />
+        <Earth size={15} distance={30} speed={0.02} />
+        <Planet texturePath="/textures/mars.jpg" size={3.5} distance={45} speed={0.02} />
+        <Planet texturePath="/textures/jupiter.jpg" size={8} distance={60} speed={0.01} />
         <Saturn
           texturePath="/textures/saturn.jpg"
           ringTexturePath="/textures/saturn_ring.png"

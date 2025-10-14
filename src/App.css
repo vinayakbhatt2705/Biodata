@@ -51,5 +51,14 @@ body, html, #root {
   background: rgba(0, 0, 0, 0.5);
   padding: 15px;
   border-radius: 10px;
-  max-width: 250px;
+  max-width: 300px;
+}
+.profile-pic {
+  width: 60px;           /* Reduced from 90px */
+  height: 75px;          /* Slightly taller to resemble a passport photo */
+  border-radius: 8px;    /* Less circular, more rectangular */
+  object-fit: cover;
+  margin-right: 15px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
