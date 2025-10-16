@@ -234,7 +234,7 @@ export default function App() {
   const [loadingDone, setLoadingDone] = useState(false);
   const loadedTextures = useRef(0);
   const totalTextures = 9; // sun, mercury, venus, earth, moon, mars, jupiter, saturn, saturn_ring
-  const targetProgress = useRef(0); // smooth animation target
+  const targetProgress = useRef(0);
 
   const universeCameraPos = [0, 12, 28];
 
@@ -276,13 +276,15 @@ export default function App() {
     }
   };
 
-  // Smoothly animate progress
+  // Smooth easing animation for loading bar
   useEffect(() => {
     let animationFrame;
     const animateProgress = () => {
       setLoadingProgress(prev => {
-        if (prev < targetProgress.current) return prev + 1;
-        return prev;
+        const diff = targetProgress.current - prev;
+        if (diff <= 0) return prev;
+        const increment = Math.max(0.5, diff * 0.1);
+        return Math.min(prev + increment, targetProgress.current);
       });
       animationFrame = requestAnimationFrame(animateProgress);
     };
@@ -331,7 +333,7 @@ export default function App() {
       {!loadingDone && (
         <div className="loading-screen">
           <h1>Thank you for your patience...</h1>
-          <p>Loading planets: {loadingProgress}%</p>
+          <p>Loading planets: {Math.round(loadingProgress)}%</p>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${loadingProgress}%` }}></div>
           </div>
