@@ -56,7 +56,7 @@ function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRo
   const map = useLoader(
     THREE.TextureLoader,
     texturePath,
-    (texture) => onLoad(texturePath)
+    () => onLoad(texturePath)
   );
 
   useFrame(({ clock }) => {
@@ -234,6 +234,7 @@ export default function App() {
   const [loadingDone, setLoadingDone] = useState(false);
   const loadedTextures = useRef(0);
   const totalTextures = 9; // sun, mercury, venus, earth, moon, mars, jupiter, saturn, saturn_ring
+  const targetProgress = useRef(0); // smooth animation target
 
   const universeCameraPos = [0, 12, 28];
 
@@ -269,11 +270,25 @@ export default function App() {
 
   const handleTextureLoad = () => {
     loadedTextures.current += 1;
-    setLoadingProgress(Math.round((loadedTextures.current / totalTextures) * 100));
+    targetProgress.current = Math.round((loadedTextures.current / totalTextures) * 100);
     if (loadedTextures.current >= totalTextures) {
-      setTimeout(() => setLoadingDone(true), 500); // small delay for smoothness
+      setTimeout(() => setLoadingDone(true), 500);
     }
   };
+
+  // Smoothly animate progress
+  useEffect(() => {
+    let animationFrame;
+    const animateProgress = () => {
+      setLoadingProgress(prev => {
+        if (prev < targetProgress.current) return prev + 1;
+        return prev;
+      });
+      animationFrame = requestAnimationFrame(animateProgress);
+    };
+    animateProgress();
+    return () => cancelAnimationFrame(animationFrame);
+  }, []);
 
   useEffect(() => {
     if (currentLineIndex === biodataLines.length && !speechDone) {
