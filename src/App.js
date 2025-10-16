@@ -102,7 +102,6 @@ function Saturn({ distance = 20, orbitSpeed = 0.01, selfRotate = 0.005, name, on
       <mesh ref={ringRef} onClick={() => onClick(name)}>
         <ringGeometry args={[1.8, 2.8, 64]} />
         <meshStandardMaterial map={ringMap} side={THREE.DoubleSide} transparent />
-        {/* tilt the ring a bit for realism */}
         <mesh rotation-x={Math.PI / 6} />
       </mesh>
     </>
@@ -228,6 +227,24 @@ export default function App() {
 
   const universeCameraPos = [0, 12, 28];
 
+  // ----------------- Loading State -----------------
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => setLoading(false), 500);
+          return 100;
+        }
+        return prev + Math.floor(Math.random() * 5) + 1;
+      });
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+
   const handlePlanetClick = (name) => {
     const infoMap = {
       Sun: "Sun Pharma Experience 3 Year Manager (2014-2017)",
@@ -295,45 +312,63 @@ export default function App() {
 
   return (
     <>
-      {/* Biodata Behind Planets */}
-      <div className="biodata">
-        <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
-        <div className="biodata-text">
-          {biodataLines.map((line, idx) => (
-            <p key={idx}>
-              {idx === currentLineIndex && (
-                <TypewriterText
-                  text={line}
-                  speed={60}
-                  onComplete={() => setTimeout(() => setCurrentLineIndex((i) => i + 1), 300)}
-                />
-              )}
-              {idx < currentLineIndex && <span>{line}</span>}
-            </p>
-          ))}
+      {/* Loading Screen */}
+      {loading && (
+        <div className="loading-screen">
+          <div className="loading-content">
+            <h1>🚀 Welcome to Vinayak Bhatt's Solar System</h1>
+            <p>Website is downloading... Thank you for your patience.</p>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+            </div>
+            <p>{progress}%</p>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 3D Scene */}
-      <Canvas style={{ position: "relative", zIndex: 2 }} camera={{ position: universeCameraPos, fov: 50 }}>
-        <ambientLight intensity={0.6} />
-        <pointLight position={[0, 0, 0]} intensity={1.6} distance={90} />
-        <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
+      {/* Biodata Behind Planets */}
+      {!loading && (
+        <>
+          <div className="biodata">
+            <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
+            <div className="biodata-text">
+              {biodataLines.map((line, idx) => (
+                <p key={idx}>
+                  {idx === currentLineIndex && (
+                    <TypewriterText
+                      text={line}
+                      speed={60}
+                      onComplete={() => setTimeout(() => setCurrentLineIndex((i) => i + 1), 300)}
+                    />
+                  )}
+                  {idx < currentLineIndex && <span>{line}</span>}
+                </p>
+              ))}
+            </div>
+          </div>
 
-        <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
-        <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
-        <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
-        <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
-        <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
-        <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
-        <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} />
+          {/* 3D Scene */}
+          <Canvas style={{ position: "relative", zIndex: 2 }} camera={{ position: universeCameraPos, fov: 50 }}>
+            <ambientLight intensity={0.6} />
+            <pointLight position={[0, 0, 0]} intensity={1.6} distance={90} />
+            <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
 
-        <OrbitControls enableZoom enablePan />
-      </Canvas>
+            <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
+            <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
+            <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
+            <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
+            <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
+            <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
+            <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} />
 
-      {/* Planet Info Flash */}
-      {planetInfo && flash && (
-        <div className="flash-info">{planetInfo}</div>
+            <OrbitControls enableZoom enablePan />
+          </Canvas>
+
+          {/* Planet Info Flash */}
+          {planetInfo && flash && (
+            <div className="flash-info">{planetInfo}</div>
+          )}
+        </>
       )}
     </>
   );
