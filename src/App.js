@@ -51,9 +51,13 @@ function latLonToXYZ(lat, lon, radius) {
 }
 
 // -------------------- Planet --------------------
-function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRotate = 0.01, name, onClick }) {
+function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRotate = 0.01, name, onClick, onLoad }) {
   const meshRef = useRef();
-  const map = useLoader(THREE.TextureLoader, texturePath);
+  const map = useLoader(
+    THREE.TextureLoader,
+    texturePath,
+    (texture) => onLoad(texturePath)
+  );
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime() * orbitSpeed;
@@ -73,11 +77,11 @@ function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRo
 }
 
 // -------------------- Saturn --------------------
-function Saturn({ distance = 22, orbitSpeed = 0.008, selfRotate = 0.005, name, onClick }) {
+function Saturn({ distance = 22, orbitSpeed = 0.008, selfRotate = 0.005, name, onClick, onLoad }) {
   const saturnRef = useRef();
   const ringRef = useRef();
-  const saturnMap = useLoader(THREE.TextureLoader, "/textures/saturn.jpg");
-  const ringMap = useLoader(THREE.TextureLoader, "/textures/saturn_ring.png");
+  const saturnMap = useLoader(THREE.TextureLoader, "/textures/saturn.jpg", () => onLoad("saturn.jpg"));
+  const ringMap = useLoader(THREE.TextureLoader, "/textures/saturn_ring.png", () => onLoad("saturn_ring.png"));
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime() * orbitSpeed;
@@ -109,14 +113,14 @@ function Saturn({ distance = 22, orbitSpeed = 0.008, selfRotate = 0.005, name, o
 }
 
 // -------------------- Earth --------------------
-function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCameraPos }) {
+function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCameraPos, onLoad }) {
   const groupRef = useRef();
   const earthRef = useRef();
   const moonRef = useRef();
   const { camera } = useThree();
 
-  const earthMap = useLoader(THREE.TextureLoader, "/textures/earth_day.jpg");
-  const moonMap = useLoader(THREE.TextureLoader, "/textures/moon.jpg");
+  const earthMap = useLoader(THREE.TextureLoader, "/textures/earth_day.jpg", () => onLoad("earth_day.jpg"));
+  const moonMap = useLoader(THREE.TextureLoader, "/textures/moon.jpg", () => onLoad("moon.jpg"));
 
   const thaneXYZ = latLonToXYZ(19.243, 72.972, 1.22);
   const matungaXYZ = latLonToXYZ(19.025, 72.850, 1.22);
@@ -228,6 +232,8 @@ export default function App() {
   // -------------------- Loading State --------------------
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingDone, setLoadingDone] = useState(false);
+  const loadedTextures = useRef(0);
+  const totalTextures = 9; // sun, mercury, venus, earth, moon, mars, jupiter, saturn, saturn_ring
 
   const universeCameraPos = [0, 12, 28];
 
@@ -259,6 +265,14 @@ export default function App() {
     speechSynthesis.speak(utterance);
 
     setTimeout(() => setFlash(false), 3000);
+  };
+
+  const handleTextureLoad = () => {
+    loadedTextures.current += 1;
+    setLoadingProgress(Math.round((loadedTextures.current / totalTextures) * 100));
+    if (loadedTextures.current >= totalTextures) {
+      setTimeout(() => setLoadingDone(true), 500); // small delay for smoothness
+    }
   };
 
   useEffect(() => {
@@ -300,9 +314,12 @@ export default function App() {
     <>
       {/* Loading Screen */}
       {!loadingDone && (
-        <div className="loading-message">
-          <h2>Thank you for your patience...</h2>
+        <div className="loading-screen">
+          <h1>Thank you for your patience...</h1>
           <p>Loading planets: {loadingProgress}%</p>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${loadingProgress}%` }}></div>
+          </div>
         </div>
       )}
 
@@ -331,13 +348,13 @@ export default function App() {
         <pointLight position={[0, 0, 0]} intensity={1.6} distance={90} />
         <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
 
-        <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
-        <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
-        <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
-        <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
-        <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
-        <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
-        <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} onLoad={handleTextureLoad} />
+        <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} onLoad={handleTextureLoad} />
+        <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} onLoad={handleTextureLoad} />
+        <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} onLoad={handleTextureLoad} />
+        <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} onLoad={handleTextureLoad} />
+        <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} onLoad={handleTextureLoad} />
+        <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} onLoad={handleTextureLoad} />
 
         <OrbitControls enableZoom enablePan />
       </Canvas>
