@@ -116,3 +116,22 @@ html, body, #root {
   border-radius: 12px;
   transition: width 0.2s ease;
 }
+
+.loading-message {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #00ffcc;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  z-index: 5;
+}
+.loading-message h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.loading-message p {
+  font-size: 16px;
+}
+

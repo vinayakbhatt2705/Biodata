@@ -73,7 +73,7 @@ function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRo
 }
 
 // -------------------- Saturn --------------------
-function Saturn({ distance = 20, orbitSpeed = 0.01, selfRotate = 0.005, name, onClick }) {
+function Saturn({ distance = 22, orbitSpeed = 0.008, selfRotate = 0.005, name, onClick }) {
   const saturnRef = useRef();
   const ringRef = useRef();
   const saturnMap = useLoader(THREE.TextureLoader, "/textures/saturn.jpg");
@@ -225,25 +225,11 @@ export default function App() {
   const [planetInfo, setPlanetInfo] = useState(null);
   const [flash, setFlash] = useState(false);
 
+  // -------------------- Loading State --------------------
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingDone, setLoadingDone] = useState(false);
+
   const universeCameraPos = [0, 12, 28];
-
-  // ----------------- Loading State -----------------
-  const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setLoading(false), 500);
-          return 100;
-        }
-        return prev + Math.floor(Math.random() * 5) + 1;
-      });
-    }, 200);
-    return () => clearInterval(interval);
-  }, []);
 
   const handlePlanetClick = (name) => {
     const infoMap = {
@@ -313,62 +299,52 @@ export default function App() {
   return (
     <>
       {/* Loading Screen */}
-      {loading && (
-        <div className="loading-screen">
-          <div className="loading-content">
-            <h1>🚀 Welcome to Vinayak Bhatt's Solar System</h1>
-            <p>Website is downloading... Thank you for your patience.</p>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-            </div>
-            <p>{progress}%</p>
-          </div>
+      {!loadingDone && (
+        <div className="loading-message">
+          <h2>Thank you for your patience...</h2>
+          <p>Loading planets: {loadingProgress}%</p>
         </div>
       )}
 
       {/* Biodata Behind Planets */}
-      {!loading && (
-        <>
-          <div className="biodata">
-            <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
-            <div className="biodata-text">
-              {biodataLines.map((line, idx) => (
-                <p key={idx}>
-                  {idx === currentLineIndex && (
-                    <TypewriterText
-                      text={line}
-                      speed={60}
-                      onComplete={() => setTimeout(() => setCurrentLineIndex((i) => i + 1), 300)}
-                    />
-                  )}
-                  {idx < currentLineIndex && <span>{line}</span>}
-                </p>
-              ))}
-            </div>
-          </div>
+      <div className="biodata">
+        <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
+        <div className="biodata-text">
+          {biodataLines.map((line, idx) => (
+            <p key={idx}>
+              {idx === currentLineIndex && (
+                <TypewriterText
+                  text={line}
+                  speed={60}
+                  onComplete={() => setTimeout(() => setCurrentLineIndex((i) => i + 1), 300)}
+                />
+              )}
+              {idx < currentLineIndex && <span>{line}</span>}
+            </p>
+          ))}
+        </div>
+      </div>
 
-          {/* 3D Scene */}
-          <Canvas style={{ position: "relative", zIndex: 2 }} camera={{ position: universeCameraPos, fov: 50 }}>
-            <ambientLight intensity={0.6} />
-            <pointLight position={[0, 0, 0]} intensity={1.6} distance={90} />
-            <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
+      {/* 3D Scene */}
+      <Canvas style={{ position: "relative", zIndex: 2 }} camera={{ position: universeCameraPos, fov: 50 }}>
+        <ambientLight intensity={0.6} />
+        <pointLight position={[0, 0, 0]} intensity={1.6} distance={90} />
+        <Stars radius={120} depth={50} count={4000} factor={4} fade speed={1.2} />
 
-            <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
-            <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
-            <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
-            <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
-            <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
-            <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
-            <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/sun.jpg" size={3.5} distance={0} orbitSpeed={0} name="Sun" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/mercury.jpg" size={0.5} distance={6} orbitSpeed={0.05} name="Mercury" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/venus.jpg" size={0.85} distance={8.4} orbitSpeed={0.035} name="Venus" onClick={handlePlanetClick} />
+        <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
+        <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
+        <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
+        <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} />
 
-            <OrbitControls enableZoom enablePan />
-          </Canvas>
+        <OrbitControls enableZoom enablePan />
+      </Canvas>
 
-          {/* Planet Info Flash */}
-          {planetInfo && flash && (
-            <div className="flash-info">{planetInfo}</div>
-          )}
-        </>
+      {/* Planet Info Flash */}
+      {planetInfo && flash && (
+        <div className="flash-info">{planetInfo}</div>
       )}
     </>
   );
