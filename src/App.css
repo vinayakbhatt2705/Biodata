@@ -4,43 +4,69 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: black;
+  background: radial-gradient(circle at 30% 50%, #020611, #000);
+  font-family: 'Courier New', monospace;
+  color: #00ffcc;
 }
 
+/* Biodata Frame */
 .biodata {
   position: absolute;
   top: 20px;
   left: 20px;
-  color: #00ffcc;
-  font-family: 'Courier New', monospace;
-  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+  background: rgba(0, 20, 30, 0.5);
   padding: 20px 18px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.12);
-  backdrop-filter: blur(6px);
-  z-index: 10;
+  border-radius: 16px;
+  border: 2px solid #00ffcc;
+  box-shadow: 0 0 25px rgba(0,255,255,0.2);
+  backdrop-filter: blur(10px);
   max-width: 360px;
 }
 
 .profile-pic {
   width: 70px;
   height: 70px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 2px solid #0ff;
   object-fit: cover;
-  box-shadow: 0 0 12px rgba(0,255,255,0.12);
+  box-shadow: 0 0 15px rgba(0,255,255,0.3);
+  margin-bottom: 10px;
 }
 
 .biodata-text p {
   margin: 6px 0;
   color: #48e2d7;
   font-size: 15px;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
-.biodata h2 {
-  color: #00ffd6;
+.flash-info {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.95);
+  border: 2px solid #333;
+  border-radius: 12px;
   font-size: 18px;
-  margin: 0;
-  padding: 0;
+  font-weight: bold;
+  color: #000;
+  z-index: 10;
+  animation: flash 1s infinite;
+}
+
+@keyframes flash {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+
+.marker {
+  color: black;
+  background: rgba(255,255,255,0.85);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  white-space: nowrap;
 }

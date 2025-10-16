@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect, useRef } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars, Html } from "@react-three/drei";
@@ -190,7 +189,6 @@ export default function App() {
   const [planetInfo, setPlanetInfo] = useState(null);
   const [flash, setFlash] = useState(false);
 
-  const sunMap = useLoader(THREE.TextureLoader, "/textures/sun.jpg");
   const universeCameraPos = [0, 12, 28];
 
   const handlePlanetClick = (name) => {
@@ -202,7 +200,22 @@ export default function App() {
     };
     setPlanetInfo(infoMap[name]);
     setFlash(true);
-    setTimeout(() => setFlash(false), 1000); // 15 sec flash
+
+    const utterance = new SpeechSynthesisUtterance(infoMap[name]);
+    utterance.rate = 1;
+    utterance.pitch = 1.05;
+    const voices = speechSynthesis.getVoices();
+    const femaleVoice = voices.find(v =>
+      v.name.toLowerCase().includes("female") ||
+      v.name.toLowerCase().includes("zira") ||
+      v.name.toLowerCase().includes("susan")
+    );
+    if (femaleVoice) utterance.voice = femaleVoice;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+
+    setTimeout(() => setFlash(false), 3000);
   };
 
   useEffect(() => {
@@ -217,18 +230,25 @@ export default function App() {
           textToSpeak += `${line}. `;
         }
       });
+
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
       utterance.rate = 1;
       utterance.pitch = 1.05;
       const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find((v) => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("susan"));
+      const femaleVoice = voices.find(v =>
+        v.name.toLowerCase().includes("female") ||
+        v.name.toLowerCase().includes("zira") ||
+        v.name.toLowerCase().includes("susan")
+      );
       if (femaleVoice) utterance.voice = femaleVoice;
+
       utterance.onend = () => {
         setZoomStage(1);
         setTimeout(() => setZoomStage(2), 15000);
         setTimeout(() => setZoomStage(3), 30000);
         setTimeout(() => setZoomStage(0), 45000);
       };
+
       speechSynthesis.speak(utterance);
     }
   }, [currentLineIndex, biodataLines, speechDone]);
@@ -236,13 +256,11 @@ export default function App() {
   return (
     <>
       {/* Biodata Behind Planets */}
-      <div className="biodata" style={{ position: "absolute", top: 0, left: 0, zIndex: 1, pointerEvents: "none", opacity: 0.6 }}>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
-          <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
-        </div>
+      <div className="biodata">
+        <img src="/images/resume-pic.jpg" alt="Vinayak Bhatt" className="profile-pic" />
         <div className="biodata-text">
           {biodataLines.map((line, idx) => (
-            <p key={idx} style={{ margin: "6px 0" }}>
+            <p key={idx}>
               {idx === currentLineIndex && (
                 <TypewriterText
                   text={line}
@@ -269,46 +287,13 @@ export default function App() {
         <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
         <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
 
-        <OrbitControls enableZoom={true} enablePan={true} />
+        <OrbitControls enableZoom enablePan />
       </Canvas>
 
-      {/* Flashing Planet Info */}
+      {/* Planet Info Flash */}
       {planetInfo && flash && (
-        <div style={{
-          position: "absolute",
-          top: "10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          padding: "12px 20px",
-          background: "rgba(255,255,255,0.95)",
-          border: "2px solid #333",
-          borderRadius: "12px",
-          fontSize: "18px",
-          fontWeight: "bold",
-          color: "#000",
-          zIndex: 10,
-          animation: "flash 1s infinite"
-        }}>
-          {planetInfo}
-        </div>
+        <div className="flash-info">{planetInfo}</div>
       )}
-
-      <style>
-        {`
-          @keyframes flash {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0; }
-          }
-          .marker { 
-            color: black; 
-            background: rgba(255,255,255,0.8); 
-            padding: 6px 10px; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            white-space: nowrap; 
-          }
-        `}
-      </style>
     </>
   );
 }
