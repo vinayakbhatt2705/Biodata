@@ -72,6 +72,43 @@ function Planet({ texturePath, size = 1, distance = 5, orbitSpeed = 0.01, selfRo
   );
 }
 
+// -------------------- Saturn --------------------
+function Saturn({ distance = 20, orbitSpeed = 0.01, selfRotate = 0.005, name, onClick }) {
+  const saturnRef = useRef();
+  const ringRef = useRef();
+  const saturnMap = useLoader(THREE.TextureLoader, "/textures/saturn.jpg");
+  const ringMap = useLoader(THREE.TextureLoader, "/textures/saturn_ring.png");
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime() * orbitSpeed;
+    if (saturnRef.current) {
+      saturnRef.current.position.x = distance * Math.cos(t);
+      saturnRef.current.position.z = distance * Math.sin(t);
+      saturnRef.current.rotation.y += selfRotate;
+    }
+    if (ringRef.current) {
+      ringRef.current.position.x = distance * Math.cos(t);
+      ringRef.current.position.z = distance * Math.sin(t);
+      ringRef.current.rotation.y += selfRotate;
+    }
+  });
+
+  return (
+    <>
+      <mesh ref={saturnRef} onClick={() => onClick(name)}>
+        <sphereGeometry args={[1.5, 64, 64]} />
+        <meshStandardMaterial map={saturnMap} />
+      </mesh>
+      <mesh ref={ringRef} onClick={() => onClick(name)}>
+        <ringGeometry args={[1.8, 2.8, 64]} />
+        <meshStandardMaterial map={ringMap} side={THREE.DoubleSide} transparent />
+        {/* tilt the ring a bit for realism */}
+        <mesh rotation-x={Math.PI / 6} />
+      </mesh>
+    </>
+  );
+}
+
 // -------------------- Earth --------------------
 function Earth({ distance = 11, orbitSpeed = 0.02, zoomStage = 0, universeCameraPos }) {
   const groupRef = useRef();
@@ -195,7 +232,10 @@ export default function App() {
     const infoMap = {
       Sun: "Sun Pharma Experience 3 Year Manager (2014-2017)",
       Jupiter: "Capgemini - Java Team Lead (2013), SAP Operations Lead (2021), Scrum Master (2023)",
+      Saturn: "Base Information, ERP Implementor (2007-2009/2011-2012)",
       Earth: "Base Information Consultant ERP (2007-2009/2010-2012)",
+      Mercury: "Chate Coaching Classes",
+      Venus: "Bilkish Dubai (2009-2010)",
       Mars: "Softenger, Project Lead (2018-2019)",
     };
     setPlanetInfo(infoMap[name]);
@@ -286,6 +326,7 @@ export default function App() {
         <Earth distance={11} orbitSpeed={0.02} zoomStage={zoomStage} universeCameraPos={universeCameraPos} />
         <Planet texturePath="/textures/mars.jpg" size={0.9} distance={14} orbitSpeed={0.018} name="Mars" onClick={handlePlanetClick} />
         <Planet texturePath="/textures/jupiter.jpg" size={1.8} distance={18} orbitSpeed={0.012} name="Jupiter" onClick={handlePlanetClick} />
+        <Saturn distance={22} orbitSpeed={0.008} name="Saturn" onClick={handlePlanetClick} />
 
         <OrbitControls enableZoom enablePan />
       </Canvas>
